@@ -1,11 +1,27 @@
 import React, { Component } from "react";
+//Controlled Component.
 
 class Counter extends Component {
-  state = {
-    count: 0,
-    tags: ["tag1", "tag2", "tag3"],
-    imageUrl: "https://picsum.photos/200",
-  };
+  componentDidUpdate(prevProps, prevState) {
+    console.log("Prev props", prevProps);
+    console.log("prevState", prevState);
+
+    //We can use the compnentDIdUpdate as a way of sending out an Ajax call
+    if (prevProps.counter.value !== this.props.counter.value) {
+      //Ajax call and get new data
+    }
+  }
+  //This gets called when it is being removed from the DOM
+  componentWillUnmount() {
+    console.log("component unmount");
+  }
+  // state = {
+  //   //count: this.props.value,
+  //   value: this.props.counter.value,
+
+  //   tags: ["tag1", "tag2", "tag3"],
+  //   imageUrl: "https://picsum.photos/200",
+  // };
 
   // //solution to bind event handlers to this
   // constructor() {
@@ -21,39 +37,58 @@ class Counter extends Component {
   //   fontSize: 10,
   //   fontWeight: "bold",
   // };
-  renderTags() {
-    if (this.state.tags.length === 0) return <p> There are no tags!</p>;
-    return (
-      <ul>
-        {this.state.tags.map((bask) => (
-          <li key={bask}> {bask} </li>
-        ))}
-      </ul>
-    );
-  }
-  handleIncrement = (product) => {
-    //shows in console
-    console.log(product);
-    console.log("Increment Button Clicked!", this.state.count);
-    //changes state the official way so React is aware.
-    this.setState({ count: this.state.count + 1 });
-  };
+  // renderTags() {
+  //   if (this.state.tags.length === 0) return <p> There are no tags!</p>;
+  //   return (
+  //     <ul>
+  //       {this.state.tags.map((bask) => (
+  //         <li key={bask}> {bask} </li>
+  //       ))}
+  //     </ul>
+  //   );
+  // }
+
   // doHandleIncrement = () => {
   //   this.handleIncrement({ id: 1 });
   // };
   render() {
+    console.log("Counter -Rendered");
     return (
-      <div>
-        <span className={this.getBadgeClasses()}> {this.formatCount()}</span>
-        <button
-          onClick={() => this.handleIncrement()}
-          className="btn btn-secondary btn-sm"
-        >
-          Increment{" "}
-        </button>
-        {this.state.tags.length === 0 && <p>Please create a new tag!</p>}
+      <div className="row">
+        <div className="col-1">
+          <span className={this.getBadgeClasses()}> {this.formatCount()}</span>
+        </div>
+        <div className="col m2">
+          {/* {this.props.children} */}
+          {/* Here we are running the functions automatically that is why they have parenthesis. */}
 
-        <ul>{this.renderTags()}</ul>
+          <button
+            //This doesn't need an arrow function prefixing it because it is referencing a function within this class on this page. If you lift the state up then you will need to have an arrow function
+
+            onClick={() => this.props.onIncrement(this.props.counter)}
+            className="btn btn-secondary btn-sm"
+          >
+            +
+          </button>
+
+          <button
+            onClick={() => this.props.onDecrement(this.props.counter)}
+            className="btn btn-secondary btn-sm m-2"
+            disabled={this.stateOfButton()}
+          >
+            -
+          </button>
+          <button
+            onClick={() => this.props.onDelete(this.props.counter.id)}
+            className="btn btn-danger btn-sm "
+          >
+            {" "}
+            Delete
+          </button>
+
+          {/* {this.state.tags.length === 0 && <p>Please create a new tag!</p>}
+        <ul>{this.renderTags()}</ul> */}
+        </div>
       </div>
     );
   }
@@ -62,15 +97,19 @@ class Counter extends Component {
     //this sets a javascript variable to be a string
     let classes = "badge m-2 badge-";
     //the string is concantednated based off of this ternary statement First part o
-    classes += this.state.count === 0 ? "warning" : "primary";
+    classes += this.props.counter.value === 0 ? "warning" : "primary";
     return classes;
   }
-
+  stateOfButton() {
+    return this.props.counter.value === 0 ? "disabled" : "";
+  }
   formatCount() {
     //Destructuring of the key in the state. This refers back to the parent class, then you choose whatever function you want like you normally would for a Class! In this case we choose state!
-    const { count } = this.state;
-    //If count is equal to primitive 0, then make count equal to the string Zero, otherwise just render count as the count
-    return count === 0 ? "Zero" : count;
+    const { value } = this.props.counter;
+
+    //If value is equal to primitive 0, then make value equal to the string Zero, otherwise just render value as the value
+    return value === 0 ? "Zero" : value;
   }
+  deactivateButton() {}
 }
 export default Counter;
